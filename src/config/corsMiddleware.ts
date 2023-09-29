@@ -5,6 +5,8 @@ import allowedOrigins from './allowedOrigins';
 // Middleware function to handle CORS
 function corsMiddleware(req: Request, res: Response, next: NextFunction) {
   const origin : string = req.get('origin') as string;
+  console.log(origin);
+  
 
   // Check if the request origin is in the allowed origins list
   if (allowedOrigins.includes(origin)) {
