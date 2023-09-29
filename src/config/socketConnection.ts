@@ -13,6 +13,24 @@ const connectSocket = (server: any) => {
   io.on('connection', (socket: Socket) => {
     console.log('A user connected', socket.id);
 
+    socket.on('roll', () => {
+      const generateRandomNumbers = (count : number ) : Array<number> => {
+        const min = 1;
+        const max = 9;
+        const randomNumbers = [];
+      
+        for (let i = 0; i < count; i++) {
+          const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+          randomNumbers.push(randomNumber);
+        }
+      
+        return randomNumbers;
+      }
+      const randomNumbers : Array<number> = generateRandomNumbers(15);
+      socket.emit('results', randomNumbers);
+    });
+
+
     socket.on('disconnect', () => {
       console.log('A user disconnected');
     });
