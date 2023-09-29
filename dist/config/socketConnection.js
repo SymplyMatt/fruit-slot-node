@@ -16,6 +16,7 @@ const connectSocket = (server) => {
     io.on('connection', (socket) => {
         console.log('A user connected', socket.id);
         socket.on('roll', () => {
+            console.log('roll event called');
             const generateRandomNumbers = (count) => {
                 const min = 1;
                 const max = 9;
@@ -27,6 +28,7 @@ const connectSocket = (server) => {
                 return randomNumbers;
             };
             const randomNumbers = generateRandomNumbers(15);
+            console.log('numbers: ', randomNumbers);
             socket.emit('results', randomNumbers);
         });
         socket.on('disconnect', () => {
