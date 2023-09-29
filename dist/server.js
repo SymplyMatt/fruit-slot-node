@@ -1,0 +1,30 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const helmet_1 = __importDefault(require("helmet"));
+require("./environment");
+const mongoose_1 = __importDefault(require("mongoose"));
+const connectDb_1 = __importDefault(require("./config/connectDb"));
+const router_1 = __importDefault(require("./routes/router"));
+const corsMiddleware_1 = __importDefault(require("./config/corsMiddleware"));
+const app = (0, express_1.default)();
+const http = require('http');
+const server = http.createServer(app);
+const socketConnection_1 = __importDefault(require("./config/socketConnection"));
+const PORT = process.env.PORT;
+(0, connectDb_1.default)();
+app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: false }));
+app.use((0, helmet_1.default)());
+app.use(corsMiddleware_1.default);
+const socketIoConn = (0, socketConnection_1.default)(server);
+app.use('/', router_1.default);
+mongoose_1.default.connection.once("open", () => {
+    console.log("Connected to MongoDB");
+    server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+});
