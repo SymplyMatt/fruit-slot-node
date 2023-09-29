@@ -1,8 +1,7 @@
 import { Router, Request, Response } from 'express';
 import User, { UserModel } from '../../../models/User';
-import findOne from '../../../config/findOne';
 import sendResponse from '../../../config/sendResponse';
-import sendUserInfo from '../../../config/sendUserInfo';
+import { Model } from 'mongoose';
 
 interface AuthenticatedRequest extends Request {
     user?: string,
@@ -12,9 +11,11 @@ interface AuthenticatedRequest extends Request {
 export default async function getUserInfo ( req : AuthenticatedRequest, res : Response) {
 
     try {
-        let foundUser : UserModel = await findOne("user", {_id : req.user});
+        const userDocument: Model<UserModel> = User;
+        // search for duplicate;
+        const foundUser : UserModel = await userDocument.findOne({_id : req.user}) as UserModel;
         if(!foundUser) return sendResponse(res, 401, "Invalid User!");
-        return sendResponse(res, 201, "Success!", await sendUserInfo(foundUser) );
+        return sendResponse(res, 201, "Success!", foundUser);
     } catch (error: any) {
         console.log(error);
         res.status(500).json({

@@ -3,15 +3,17 @@ import User, { UserModel } from '../../../models/User';
 import bcrypt from 'bcrypt'
 import genHash from '../../../config/hashGen';
 import AuthenticatedRequest from '../../../config/authenticatedRequst';
-import findOne from '../../../config/findOne';
 import sendResponse from '../../../config/sendResponse';
+import { Model } from 'mongoose';
 
 
 
 export default async function resetPassword ( req : AuthenticatedRequest, res : Response) {
 
     try {
-        let foundUser : UserModel = await findOne("user", {_id : req.user});
+        const userDocument: Model<UserModel> = User;
+        // search for duplicate;
+        const foundUser : UserModel = await userDocument.findOne({_id : req.user}) as UserModel;
         if(!foundUser) return sendResponse(res, 401, "User does not exist!");
         foundUser.password = await genHash(req.body.newPassword);
         foundUser.save();

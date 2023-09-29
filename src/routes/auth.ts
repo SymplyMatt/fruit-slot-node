@@ -24,7 +24,8 @@ router.post(
             }
             return true;
         }),
-    body('fullName').isString().withMessage('Must contain first name and lastname'),
+    body('firstName').isString().withMessage('First name is required'),
+    body('lastName').isString().withMessage('Last name is required'),
     body('phone')
         .custom((value) => {
             const phoneNumberRegex = /^(\+?234|0)[123456789]\d{9}$/;

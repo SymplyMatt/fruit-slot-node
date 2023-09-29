@@ -13,13 +13,8 @@ router.post(
   '/modifyUserInfo', multer.single('photo'),
   [
     body('email').optional().isEmail().withMessage('Email must be a valid email address'),
-    body('language')
-      .optional()
-      .isIn(['english', 'french'])
-      .withMessage(
-        'Language is either english or french',
-      ),
-    body('fullName').optional().isString().withMessage('Must contain first name and lastname'),
+    body('firstName').optional().isString().withMessage('Invalid first name'),
+    body('lastName').optional().isString().withMessage('Invalid last name'),
     body('phone')
         .optional()
         .custom((value) => {
@@ -30,7 +25,7 @@ router.post(
             return true;
         })
   ],
-  validate, imageLimit,modifyUserInfo
+  validate,modifyUserInfo
 );
 
 router.get('/getUserInfo',validate,getUserInfo);

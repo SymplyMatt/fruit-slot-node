@@ -2,15 +2,17 @@ import { Router, Request, Response } from 'express';
 import User, { UserModel } from '../../../models/User';
 import genToken from '../../../config/jwtGen';
 import sendEmail from '../../../config/sendEmail';
-import findOne from '../../../config/findOne';
 import sendResponse from '../../../config/sendResponse';
+import { Model } from 'mongoose';
 
 
 
 export default async function requestResetPassword ( req : Request, res : Response) {
 
     try {
-        let foundUser : UserModel = await findOne("user", {email : req.body.email});
+        const userDocument: Model<UserModel> = User;
+        // search for duplicate;
+        const foundUser : UserModel = await userDocument.findOne({email : req.body.email}) as UserModel;
         if(!foundUser) return sendResponse(res, 401, "User does not exist")
         // jwt
         const accessToken = await genToken({

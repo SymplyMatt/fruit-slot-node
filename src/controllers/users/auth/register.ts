@@ -5,35 +5,37 @@ import jwt from 'jsonwebtoken'
 import genHash from '../../../config/hashGen';
 import genToken from '../../../config/jwtGen';
 import sendEmail from '../../../config/sendEmail';
-import generateUserId from '../../../config/generateId';
 import { Model } from 'mongoose';
 import sendResponse from '../../../config/sendResponse';
-import sendUserInfo from '../../../config/sendUserInfo';
 
 export default async function register ( req : Request, res : Response) {
-    const {fullName,password,email, phone}  = req.body;
+    const {firstName, lastName,password,email, phone}  = req.body;
     try {
-        let userId : Number;
-        userId = await generateUserId() as Number;
         const userDocument: Model<UserModel> = User;
         // search for duplicate;
         const duplicate : UserModel = await userDocument.findOne({email}).collation({locale : 'en', strength: 2}).lean().exec() as UserModel;
         if(duplicate) return sendResponse(res, 401, 'User already exists with that email');
         // Create a new document
         const newUser: UserModel = await userDocument.create({
-            fullName,
+            firstName,
+            lastName,
             email,
             phone,
             'password' : await genHash(password),
-            userId
         });
         const token = await genToken({
             user : newUser._id,
             email : newUser.email,
-            userId : newUser.userId,
             roles : newUser.roles
-        }, '30m')
-        sendResponse(res, 201,'Account created successfully!', await sendUserInfo(newUser, true));
+        }, '30m');
+        const regUser = {
+            firstName: newUser.firstName,
+            lastName: newUser.lastName,
+            email: newUser.email,
+            phone: newUser.phone,
+            token
+        };
+        sendResponse(res, 201,'Account created successfully!', regUser);
         const emailOutput = `
         <!DOCTYPE html>
         <html lang="en">
