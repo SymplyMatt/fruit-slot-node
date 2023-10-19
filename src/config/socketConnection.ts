@@ -16,15 +16,16 @@ const connectSocket = (server: any) => {
     console.log('A user connected', socket.id);
 
     socket.on('roll', (lines : number, bet : number) => {
-      console.log('roll event called');
-      console.log('lines: ', lines);
+      // console.log('roll event called');
+      // console.log('lines: ', lines);
       
       const randomNumbers : Array<number> = generateRandomNumbers(15);
       const slotMachine = new SlotMachine(randomNumbers, lines, bet);
       const total_score = slotMachine.totalScore();
-      console.log('numbers: ', randomNumbers);
+      // console.log('numbers: ', randomNumbers);
       console.log('total score: ', total_score);
       socket.emit('results', randomNumbers);
+      socket.emit('score', total_score);
     });
 
     socket.on('disconnect', () => {

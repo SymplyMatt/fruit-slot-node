@@ -1,3 +1,4 @@
+import { count } from "console";
 import data from "./data";
 import SlotMachine, { indexes } from "./slotmachine";
 
@@ -58,19 +59,100 @@ export default class SlotMachineWinningLines {
         }
     }
     public getTotalScore = ()  : number => {
-        this.getLineOneScore(this.findWinningIndexes([0,0,0,0,0,...this.slotNumbers.slice(5,10),0,0,0,0,0]).lineOneIndexes);
-        this.lines > 1 && this.getLineTwoScore(this.findWinningIndexes([...this.slotNumbers.slice(0,5),0,0,0,0,0,0,0,0,0,0]).lineTwoIndexes);
-        this.lines > 2 && this.getLineThreeScore(this.findWinningIndexes([0,0,0,0,0,0,0,0,0,0,...this.slotNumbers.slice(10,15)]).lineThreeIndexes);
-        return 1
+        const line_one_score = this.getLineOneScore(this.findWinningIndexes([0,0,0,0,0,...this.slotNumbers.slice(5,10),0,0,0,0,0]).lineOneIndexes) ;
+        const line_two_score = this.lines > 1 ? this.getLineTwoScore(this.findWinningIndexes([...this.slotNumbers.slice(0,5),0,0,0,0,0,0,0,0,0,0]).lineTwoIndexes) : 0;
+        const line_three_score = this.lines > 2 ? this.getLineThreeScore(this.findWinningIndexes([0,0,0,0,0,0,0,0,0,0,...this.slotNumbers.slice(10,15)]).lineThreeIndexes) : 0;
+        return line_one_score + line_two_score + line_three_score
     };
-
-    private getLineOneScore = (winningIndexes : Array<Array<number>>) => {
+    private calculateScore = (indexes : Array<Array<number>>) : number => {
+        let score = 0;
+        indexes.map((array: Array<number>, index : number) => {
+            
+            const length = array.length;
+            const icon = this.slotNumbers[array[0]];
+            
+            switch (icon) {
+                case 1:
+                case 2:
+                case 3:
+                    switch (length) {
+                        case 2:
+                            score = score + 20
+                            break;
+                        case 3:
+                            score = score + 30
+                            break;
+                        case 4:
+                            score =score + 100
+                            break;
+                        case 5:
+                            score =score + 200
+                            break;
+                        default:
+                            score = score + 0
+                            break;
+                    }
+                    break;
+                case 4:
+                case 5:
+                case 5:
+                case 6:
+                case 7:
+                    switch (length) {
+                        case 3:
+                            score =score + 50
+                            break;
+                        case 4:
+                            score =score + 150
+                            break;
+                        case 5:
+                            score = score + 500
+                            break;
+                        default:
+                            score =score + 0
+                            break;
+                    }
+                    break;
+                case 8:
+                case 9:
+                    switch (length) {
+                        case 3:
+                            score =score + 200
+                            break;
+                        case 4:
+                            score =score + 400
+                            break;
+                        case 5:
+                            score = score + 1000
+                            break;
+                        default:
+                            score = score + 0
+                            break;
+                    }
+                    break;
+                default:
+                    score = score + 0;
+                    break;
+            }
+        });
+        return score
+    }
+    private getLineOneScore = (winningIndexes : Array<Array<number>>) : number => {
         let indexes = winningIndexes.filter(item => item.includes(5) || item.includes(9)); 
+        let score = this.calculateScore(indexes);
+        console.log('line one score: ', score);
+        return score
     };
     private getLineTwoScore = (winningIndexes : Array<Array<number>>) => {
         let indexes = winningIndexes.filter(item => item.includes(0) || item.includes(4)); 
+        let score = this.calculateScore(indexes);
+        console.log('line two score: ', score);
+        return score
     };
     private getLineThreeScore = (winningIndexes : Array<Array<number>>) => {
         let indexes = winningIndexes.filter(item => item.includes(10) || item.includes(14)); 
+        let score = this.calculateScore(indexes);
+        console.log('line three score: ', score);
+        return score
     };
 }
