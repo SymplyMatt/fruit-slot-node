@@ -1,5 +1,7 @@
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import allowedOrigins from './allowedOrigins';
+import { generateRandomNumbers } from './utilities/generateRandomNumbers';
+import SlotMachine from './utilities/slotmachine';
 
 const connectSocket = (server: any) => {
   const io = new SocketIOServer(server, {
@@ -13,25 +15,17 @@ const connectSocket = (server: any) => {
   io.on('connection', (socket: Socket) => {
     console.log('A user connected', socket.id);
 
-    socket.on('roll', () => {
+    socket.on('roll', (lines : number, bet : number) => {
       console.log('roll event called');
-      const generateRandomNumbers = (count : number ) : Array<number> => {
-        const min = 1;
-        const max = 9;
-        const randomNumbers = [];
+      console.log('lines: ', lines);
       
-        for (let i = 0; i < count; i++) {
-          const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-          randomNumbers.push(randomNumber);
-        }
-      
-        return randomNumbers;
-      }
       const randomNumbers : Array<number> = generateRandomNumbers(15);
+      const slotMachine = new SlotMachine(randomNumbers, lines, bet);
+      const total_score = slotMachine.totalScore();
       console.log('numbers: ', randomNumbers);
+      console.log('total score: ', total_score);
       socket.emit('results', randomNumbers);
     });
-
 
     socket.on('disconnect', () => {
       console.log('A user disconnected');
