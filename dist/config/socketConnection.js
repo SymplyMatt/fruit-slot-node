@@ -17,16 +17,15 @@ const connectSocket = (server) => {
     // Set up event handlers for Socket.IO connections
     io.on('connection', (socket) => {
         console.log('A user connected', socket.id);
-        socket.on('roll', (lines, bet) => {
-            // console.log('roll event called');
-            // console.log('lines: ', lines);
+        socket.on('roll', (lines, bet, balance) => {
+            const newBalance = balance - (lines * bet);
             const randomNumbers = (0, generateRandomNumbers_1.generateRandomNumbers)(15);
             const slotMachine = new slotmachine_1.default(randomNumbers, lines, bet);
-            const total_score = slotMachine.totalScore();
-            // console.log('numbers: ', randomNumbers);
-            console.log('total score: ', total_score);
+            const points_won = slotMachine.totalScore();
+            console.log('old balance: ', newBalance);
+            console.log('points won: ', points_won);
             socket.emit('results', randomNumbers);
-            socket.emit('score', total_score);
+            socket.emit('score', newBalance + points_won, points_won);
         });
         socket.on('disconnect', () => {
             console.log('A user disconnected');

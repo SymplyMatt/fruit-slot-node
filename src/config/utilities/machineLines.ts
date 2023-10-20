@@ -140,19 +140,16 @@ export default class SlotMachineWinningLines {
     private getLineOneScore = (winningIndexes : Array<Array<number>>) : number => {
         let indexes = winningIndexes.filter(item => item.includes(5) || item.includes(9)); 
         let score = this.calculateScore(indexes);
-        console.log('line one score: ', score);
         return score
     };
     private getLineTwoScore = (winningIndexes : Array<Array<number>>) => {
         let indexes = winningIndexes.filter(item => item.includes(0) || item.includes(4)); 
         let score = this.calculateScore(indexes);
-        console.log('line two score: ', score);
         return score
     };
     private getLineThreeScore = (winningIndexes : Array<Array<number>>) => {
         let indexes = winningIndexes.filter(item => item.includes(10) || item.includes(14)); 
         let score = this.calculateScore(indexes);
-        console.log('line three score: ', score);
         return score
     };
 }
